@@ -972,6 +972,21 @@ namespace Dapper
             return MultiMapAsync(cnn, command, types, map, splitOn);
         }
 
+        /// <summary>
+        /// Perform an asynchronous multi-mapping query with an arbitrary number of input types.
+        /// This returns a single type, combined from the raw types via <paramref name="map"/>.
+        /// </summary>
+        /// <typeparam name="TReturn">The combined type to return.</typeparam>
+        /// <param name="cnn">The connection to query on.</param>
+        /// <param name="command">The command to execute.</param>
+        /// <param name="types">Array of types in the recordset.</param>
+        /// <param name="map">The function to map row types to the return type.</param>
+        /// <param name="splitOn">The field we should split and read the second object from (default: "Id").</param>
+        /// <returns>An enumerable of <typeparamref name="TReturn"/>.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("ApiDesign", "RS0026:Do not add multiple public overloads with optional parameters", Justification = "Grandfathered")]
+        public static Task<IEnumerable<TReturn>> QueryAsync<TReturn>(this IDbConnection cnn, CommandDefinition command, Type[] types, Func<object[], TReturn> map, string splitOn = "Id") =>
+            MultiMapAsync(cnn, command, types, map, splitOn);
+
         private static async Task<IEnumerable<TReturn>> MultiMapAsync<TReturn>(this IDbConnection cnn, CommandDefinition command, Type[] types, Func<object[], TReturn> map, string splitOn)
         {
             if (types.Length < 1)
